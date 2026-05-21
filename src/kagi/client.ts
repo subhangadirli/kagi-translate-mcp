@@ -164,6 +164,45 @@ export class KagiClient {
     await new Promise((resolve) => setTimeout(resolve, Math.round(ms + jitter)));
   }
 
+  private normalizeKagiError(data: unknown): { message: string; body: KagiApiErrorBody | null } {
+    if (!data || typeof data !== "object") {
+      return { message: "Kagi request failed", body: null };
+    }
+
+    try {
+      const parsed = errorBodySchema.parse(data) as KagiApiErrorBody;
+
+      // Prefer explicit message fields, but fall back to other known shapes.
+      let message = parsed.message ?? parsed.error ?? parsed.detail ?? null;
+
+      // If `details` is a short string, include it if no other message present.
+      if (!message && typeof parsed.details === "string") {
+        message = parsed.details;
+      }
+
+      // Handle nested shapes like { error: { message: "..." } }
+      if (!message && (data as Record<string, unknown>).error && typeof (data as Record<string, unknown>).error === "object") {
+        const nested = (data as Record<string, unknown>).error as Record<string, unknown>;
+        if (typeof nested.message === "string") {
+          message = nested.message;
+        }
+      }
+
+      if (!message) {
+        // Fallback to a compact JSON representation so callers still get something useful.
+        try {
+          message = JSON.stringify(parsed).slice(0, 200);
+        } catch {
+          message = "Kagi request failed";
+        }
+      }
+
+      return { message, body: parsed };
+    } catch {
+      return { message: "Kagi request failed", body: null };
+    }
+  }
+
   private parseJson(responseText: string): { success: true; data: unknown } | { success: false } {
     try {
       return { success: true, data: JSON.parse(responseText) as unknown };
