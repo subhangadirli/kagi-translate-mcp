@@ -105,3 +105,59 @@ Key steps to add a tool:
 ```
 
 Responses are returned as MCP tool content blocks with `type: "text"` and the translated/proofread text in the `text` field.
+
+**MCP client example**
+
+This project is intended to be launched as a subprocess by an MCP client (for example, Claude Desktop). Example `claude_desktop_config.json` entry:
+
+```json
+{
+  "mcpServers": {
+    "kagi-translate": {
+      "command": "node",
+      "args": ["/absolute/path/to/kagi-translate-mcp/dist/index.js"],
+      "env": {
+        "KAGI_API_KEY": "your_real_key_here"
+      }
+    }
+  }
+}
+```
+
+If you prefer not to store secrets in the client config, omit the `env` block and start the client with `KAGI_API_KEY` already present in the environment.
+
+**systemd unit (optional)**
+
+You can run the server as a standalone service with `systemd` if you need a long-running process. Note: MCP clients normally start the agent as a subprocess and communicate over stdin/stdout — running as a system service is useful for other deployment patterns.
+
+Example `systemd` unit (system or user service):
+
+```ini
+[Unit]
+Description=Kagi Translate MCP server
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+Environment=KAGI_API_KEY=your_real_key_here
+WorkingDirectory=/path/to/kagi-translate-mcp
+ExecStart=/usr/bin/node /path/to/kagi-translate-mcp/dist/index.js
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+After creating the unit, enable and start it (system-wide):
+
+```bash
+sudo systemctl enable --now kagi-translate.service
+```
+
+Or for a per-user unit (no sudo):
+
+```bash
+systemctl --user enable --now kagi-translate.service
+```
