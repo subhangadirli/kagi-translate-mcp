@@ -89,42 +89,79 @@ export class KagiClient {
   private async postJson<T>(
     path: string,
     body: object,
-    schema: z.ZodTypeAny
+    schema: z.ZodTypeAny,
+    maxRetries = 3,
+    baseDelayMs = 500
   ): Promise<T> {
-    let response: Response;
+    let lastError: unknown = null;
 
-    try {
-      response = await fetch(`${this.baseUrl}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-    } catch (error) {
-      throw new KagiNetworkError(this.describeError(error));
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch(`${this.baseUrl}${path}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        const responseText = await response.text();
+        const parsedJson = this.parseJson(responseText);
+
+        if (!response.ok) {
+          const bodyErr = parsedJson.success ? (errorBodySchema.parse(parsedJson.data) as KagiApiErrorBody) : null;
+          const message = bodyErr?.message ?? bodyErr?.error ?? bodyErr?.detail ?? `Kagi request failed with status ${response.status}`;
+          const apiError = new KagiApiError(message, response.status, bodyErr);
+
+          if (this.isRetryableStatus(response.status) && attempt < maxRetries) {
+            lastError = apiError;
+            await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
+            continue;
+          }
+
+          throw apiError;
+        }
+
+        if (!parsedJson.success) {
+          throw new KagiResponseError(`Kagi returned invalid JSON from ${path}`);
+        }
+
+        const parsed = schema.safeParse(parsedJson.data);
+        if (!parsed.success) {
+          throw new KagiResponseError(`Kagi returned an unexpected response shape from ${path}`);
+        }
+
+        return parsed.data as T;
+      } catch (error) {
+        lastError = error;
+
+        // On non-api network errors, retry up to maxRetries
+        if (attempt < maxRetries) {
+          await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
+          continue;
+        }
+
+        if (error instanceof Error) {
+          throw new KagiNetworkError(this.describeError(error));
+        }
+
+        throw new KagiNetworkError(String(error));
+      }
     }
 
-    const responseText = await response.text();
-    const parsedJson = this.parseJson(responseText);
+    if (lastError instanceof KagiApiError) throw lastError;
+    if (lastError instanceof Error) throw new KagiNetworkError(this.describeError(lastError));
+    throw new KagiNetworkError("Unknown network error");
+  }
 
-    if (!response.ok) {
-      const body = parsedJson.success ? (errorBodySchema.parse(parsedJson.data) as KagiApiErrorBody) : null;
-      const message = body?.message ?? body?.error ?? body?.detail ?? `Kagi request failed with status ${response.status}`;
-      throw new KagiApiError(message, response.status, body);
-    }
+  private isRetryableStatus(status: number): boolean {
+    return status === 429 || status >= 500;
+  }
 
-    if (!parsedJson.success) {
-      throw new KagiResponseError(`Kagi returned invalid JSON from ${path}`);
-    }
-
-    const parsed = schema.safeParse(parsedJson.data);
-    if (!parsed.success) {
-      throw new KagiResponseError(`Kagi returned an unexpected response shape from ${path}`);
-    }
-
-    return parsed.data as T;
+  private async delayWithJitter(ms: number): Promise<void> {
+    const jitter = Math.random() * Math.max(0, ms * 0.1);
+    await new Promise((resolve) => setTimeout(resolve, Math.round(ms + jitter)));
   }
 
   private parseJson(responseText: string): { success: true; data: unknown } | { success: false } {
