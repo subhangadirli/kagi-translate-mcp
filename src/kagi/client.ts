@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { debug, warn, error as logError } from "../logging.js";
 import type {
   KagiApiErrorBody,
   KagiProofreadRequest,
@@ -116,10 +117,12 @@ export class KagiClient {
 
           if (this.isRetryableStatus(response.status) && attempt < maxRetries) {
             lastError = apiError;
+            warn(`Transient Kagi API error, will retry`, { path, status: response.status, attempt, message: apiError.message });
             await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
             continue;
           }
 
+          logError(`Kagi API error`, { path, status: response.status, message: apiError.message });
           throw apiError;
         }
 
@@ -138,9 +141,12 @@ export class KagiClient {
 
         // On non-api network errors, retry up to maxRetries
         if (attempt < maxRetries) {
+          warn(`Network error talking to Kagi, will retry`, { path, attempt, error: String(error) });
           await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
           continue;
         }
+
+        logError(`Network error talking to Kagi`, { path, error: String(error) });
 
         if (error instanceof Error) {
           throw new KagiNetworkError(this.describeError(error));

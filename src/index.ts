@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { runServer } from "./server.js";
+import { error as logError } from "./logging.js";
 
 function readApiKey(): string {
   const apiKey = process.env.KAGI_API_KEY;
@@ -14,8 +15,8 @@ function readApiKey(): string {
 async function main(): Promise<void> {
   try {
     await runServer({ apiKey: readApiKey() });
-  } catch (error) {
-    console.error("Failed to start Kagi Translate MCP server:", error);
+  } catch (err) {
+    logError("Failed to start Kagi Translate MCP server", { error: String(err) });
     process.exitCode = 1;
   }
 }
