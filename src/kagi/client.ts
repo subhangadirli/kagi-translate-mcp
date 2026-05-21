@@ -18,6 +18,13 @@ const kagiTranslationResponseSchema = z
     url: z.string().optional(),
     source_lang: z.string().optional(),
     target_lang: z.string().optional(),
+    detected_language: z
+      .object({
+        iso: z.string().optional(),
+        label: z.string().optional(),
+      })
+      .optional(),
+    definition: z.record(z.unknown()).optional(),
     items: z
       .array(
         z.object({

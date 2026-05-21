@@ -41,6 +41,17 @@ export interface KagiTranslationResponse {
   source_lang?: string;
   target_lang?: string;
   items?: KagiTranslationItem[];
+  detected_language?: {
+    iso?: string;
+    label?: string;
+    [key: string]: unknown;
+  };
+
+  /**
+   * Freeform definition/lexical data returned by Kagi for short inputs.
+   * Shape may vary; keep permissive.
+   */
+  definition?: Record<string, unknown>;
   [key: string]: unknown;
 }
 
