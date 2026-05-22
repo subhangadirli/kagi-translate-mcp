@@ -2,28 +2,28 @@
 
 An MCP server that exposes Kagi Translate as tools for any MCP-compatible assistant. It is BYOK: set your own `KAGI_API_KEY` and the server calls Kagi’s Translate API over stdio.
 
-## Tools
+pnpm install
 
 - `translate_text` - translate plain text or batch text inputs
 - `translate_url` - translate content fetched from a URL
 - `proofread` - proofread and correct text
 
-## Requirements
+pnpm run build
 
 - Node.js 20 or newer
 - A Kagi API key in `KAGI_API_KEY`
 
-Kagi’s translate service is currently in a free test period. If you need a key, email support@kagi.com.
+pnpm start
 
 ## Setup
 
 ```bash
-npm install
+pnpm run dev
 cp .env.example .env
 ```
 
-Edit `.env` and set your real API key:
-
+ - We use `pnpm` for consistency and reproducible installs; the repository includes a `pnpm-lock.yaml` and `packageManager` field.
+ - Run `pnpm audit` or use CI to scan dependencies. Last automated audit and dev-dependency upgrade performed: 2026-05-22. See commit history for details.
 ```bash
 KAGI_API_KEY=your_real_key_here
 ```
