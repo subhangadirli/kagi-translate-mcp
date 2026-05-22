@@ -118,8 +118,9 @@ export class KagiClient {
         const parsedJson = this.parseJson(responseText);
 
         if (!response.ok) {
-          const bodyErr = parsedJson.success ? (errorBodySchema.parse(parsedJson.data) as KagiApiErrorBody) : null;
-          const message = bodyErr?.message ?? bodyErr?.error ?? bodyErr?.detail ?? `Kagi request failed with status ${response.status}`;
+          const normalizedError = parsedJson.success ? this.normalizeKagiError(parsedJson.data) : { message: `Kagi request failed with status ${response.status}`, body: null };
+          const bodyErr = normalizedError.body;
+          const message = normalizedError.message;
           const apiError = new KagiApiError(message, response.status, bodyErr);
 
           if (this.isRetryableStatus(response.status) && attempt < maxRetries) {
@@ -146,8 +147,12 @@ export class KagiClient {
       } catch (error) {
         lastError = error;
 
-        // On non-api network errors, retry up to maxRetries
-        if (attempt < maxRetries) {
+        if (error instanceof KagiApiError || error instanceof KagiResponseError) {
+          throw error;
+        }
+
+        // Retry only transport-level failures such as fetch and connection errors.
+        if (error instanceof Error && attempt < maxRetries) {
           warn(`Network error talking to Kagi, will retry`, { path, attempt, error: String(error) });
           await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
           continue;
