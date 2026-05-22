@@ -6,7 +6,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint --ext .ts src || true",
+    "lint": "eslint --ext .ts src",
     "pretest": "npm run lint",
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",

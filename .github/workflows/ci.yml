@@ -16,7 +16,7 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
       - run: npm ci
-      - run: npm run lint || true
+      - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
       - run: node --test test/*.test.mjs
