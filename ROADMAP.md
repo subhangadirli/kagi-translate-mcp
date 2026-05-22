@@ -34,3 +34,14 @@ This is a simple to-do list for making kagi-translate-mcp more production-ready.
 - [x] Add a smoke test that exercises the built server locally.
 - [x] Add a mock Kagi transport for deterministic integration tests.
 - [x] Expose a small health or version command if the deployment pattern needs it.
+
+## Next Steps
+
+- [ ] Enforce lint failures in CI (remove `|| true` and fix reported issues).
+- [ ] Run `npm audit` and upgrade vulnerable dependencies; update lockfile.
+- [ ] Add deterministic integration tests using an HTTP mock Kagi server.
+- [ ] Harden and tighten zod schemas; add unit tests asserting failures for bad shapes.
+- [ ] Add runtime health, metrics (Prometheus), and structured logging export.
+- [ ] Document release checklist, signing, and secure publish steps.
+- [ ] Add vulnerability scans and CI gating (Dependabot, Snyk, CodeQL).
+- [ ] Add container image build and deployment smoke tests.
