@@ -21,6 +21,20 @@
     "@types/node": "^22.15.29",
     "typescript": "^5.8.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<owner>/kagi-translate-mcp.git"
+  },
+  "author": "",
+  "keywords": ["mcp","kagi","translate","mcp-server"],
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=20"
   }

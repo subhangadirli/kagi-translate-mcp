@@ -1,13 +1,16 @@
-const LEVELS: Record<string, number> = {
+const LEVELS = {
   error: 0,
   warn: 1,
   info: 2,
   debug: 3,
-};
+} as const;
+
+type LevelName = keyof typeof LEVELS;
 
 function getLevel(): number {
-  const env = process.env.KAGI_LOG_LEVEL ?? process.env.LOG_LEVEL ?? "info";
-  return LEVELS[env.toLowerCase()] ?? LEVELS.info;
+  const env = (process.env.KAGI_LOG_LEVEL ?? process.env.LOG_LEVEL ?? "info").toLowerCase();
+  const key = env as LevelName;
+  return LEVELS[key] ?? LEVELS.info;
 }
 
 function formatOutput(level: string, msg: string, meta?: unknown) {
