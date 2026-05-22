@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { debug, warn, error as logError } from "../logging.js";
+import { warn, error as logError } from "../logging.js";
 import type {
   KagiApiErrorBody,
   KagiProofreadRequest,
