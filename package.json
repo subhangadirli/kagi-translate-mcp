@@ -32,9 +32,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<owner>/kagi-translate-mcp.git"
+    "url": "git+https://github.com/subhangadirli/kagi-translate-mcp.git"
   },
-  "author": "",
+  "homepage": "https://github.com/subhangadirli/kagi-translate-mcp#readme",
+  "author": "subhangadirli <subhanqedirli@protonmail.com>",
   "keywords": [
     "mcp",
     "kagi",
