@@ -93,3 +93,9 @@ If Kagi’s authenticated docs differ on field names or response shapes, update 
 - Tool inputs are validated with Zod and inferred from the schemas.
 - Logging uses `console.error` only; stdout is reserved for MCP protocol traffic.
 - Each tool lives in its own file under `src/tools/` and is registered from `src/tools/index.ts`.
+
+## Maintenance & Security
+
+- We run `npm audit` periodically and update development dependencies to address known vulnerabilities.
+- Last automated audit and dev-dependency upgrade performed: 2026-05-22. See commit history for details.
+
