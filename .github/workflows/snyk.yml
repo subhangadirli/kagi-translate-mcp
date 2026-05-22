@@ -1,0 +1,24 @@
+name: Snyk scan
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    if: secrets.SNYK_TOKEN != ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Run Snyk test
+        uses: snyk/actions@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test

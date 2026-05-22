@@ -47,3 +47,7 @@ This is a simple to-do list for making kagi-translate-mcp more production-ready.
 - [ ] Document release checklist, signing, and secure publish steps.
 - [ ] Add vulnerability scans and CI gating (Dependabot, Snyk, CodeQL).
 - [ ] Add container image build and deployment smoke tests.
+
+- [x] Document release checklist, signing, and secure publish steps.
+- [x] Add vulnerability scans and CI gating (Dependabot, Snyk, CodeQL).
+- [x] Add container image build and deployment smoke tests.
