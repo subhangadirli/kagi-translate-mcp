@@ -28,7 +28,7 @@
     "@typescript-eslint/typescript-estree": "^8.59.4",
     "eslint": "^8.57.1",
     "minimatch": "^10.2.5",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   },
   "repository": {
     "type": "git",
