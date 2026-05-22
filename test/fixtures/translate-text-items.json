@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "source": "Hello",
+      "translation": "Hola",
+      "detected_source_lang": "en",
+      "target_lang": "es"
+    },
+    {
+      "source": "World",
+      "translation": "Mundo",
+      "detected_source_lang": "en",
+      "target_lang": "es"
+    }
+  ],
+  "source_lang": "en",
+  "target_lang": "es"
+}

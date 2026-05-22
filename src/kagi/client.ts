@@ -122,15 +122,16 @@ export class KagiClient {
           const bodyErr = normalizedError.body;
           const message = normalizedError.message;
           const apiError = new KagiApiError(message, response.status, bodyErr);
+          const requestMeta = this.summarizeRequest(path, body);
 
           if (this.isRetryableStatus(response.status) && attempt < maxRetries) {
             lastError = apiError;
-            warn(`Transient Kagi API error, will retry`, { path, status: response.status, attempt, message: apiError.message });
+            warn(`Transient Kagi API error, will retry`, { ...requestMeta, path, status: response.status, attempt, message: apiError.message });
             await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
             continue;
           }
 
-          logError(`Kagi API error`, { path, status: response.status, message: apiError.message });
+          logError(`Kagi API error`, { ...requestMeta, path, status: response.status, message: apiError.message });
           throw apiError;
         }
 
@@ -146,6 +147,7 @@ export class KagiClient {
         return parsed.data as T;
       } catch (error) {
         lastError = error;
+        const requestMeta = this.summarizeRequest(path, body);
 
         if (error instanceof KagiApiError || error instanceof KagiResponseError) {
           throw error;
@@ -153,12 +155,12 @@ export class KagiClient {
 
         // Retry only transport-level failures such as fetch and connection errors.
         if (error instanceof Error && attempt < maxRetries) {
-          warn(`Network error talking to Kagi, will retry`, { path, attempt, error: String(error) });
+          warn(`Network error talking to Kagi, will retry`, { ...requestMeta, path, attempt, error: String(error) });
           await this.delayWithJitter(baseDelayMs * Math.pow(2, attempt));
           continue;
         }
 
-        logError(`Network error talking to Kagi`, { path, error: String(error) });
+        logError(`Network error talking to Kagi`, { ...requestMeta, path, error: String(error) });
 
         if (error instanceof Error) {
           throw new KagiNetworkError(this.describeError(error));
@@ -219,6 +221,20 @@ export class KagiClient {
     } catch {
       return { message: "Kagi request failed", body: null };
     }
+  }
+
+  private summarizeRequest(path: string, body: object): Record<string, unknown> {
+    const request = body as Record<string, unknown>;
+    const meta: Record<string, unknown> = { endpoint: path };
+
+    if (typeof request.source_lang === "string") meta.source_lang = request.source_lang;
+    if (typeof request.target_lang === "string") meta.target_lang = request.target_lang;
+    if (typeof request.text === "string") meta.hasText = true;
+    if (Array.isArray(request.texts)) meta.textCount = request.texts.length;
+    if (typeof request.url === "string") meta.hasUrl = true;
+    if (typeof request.language === "string") meta.language = request.language;
+
+    return meta;
   }
 
   private parseJson(responseText: string): { success: true; data: unknown } | { success: false } {

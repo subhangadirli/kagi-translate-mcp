@@ -78,6 +78,13 @@ The public Kagi docs page is authenticated, so this implementation assumes the c
 - `POST /api/translate-url` with `url`, `source_lang`, `target_lang`, and optional `formality`, `gender`
 - `POST /api/proofread` with `text` and optional `language` or `target_lang`
 
+The server accepts a small set of response shapes and formats them like this:
+
+- `translate_text` prefers `translation`, then `translated_text`, then joined `translations`, then joined `items[].translation`
+- `translate_url` prefers `translated_url`, then `translation`, then `translated_text`
+- `proofread` prefers `corrected_text`, then `proofread`, then `text`
+- API errors are surfaced with the HTTP status and the best available message from `error`, `message`, `detail`, or nested `error.message`
+
 If Kagi’s authenticated docs differ on field names or response shapes, update `src/kagi/types.ts` and the tool request mapping in `src/tools/`.
 
 ## Implementation Notes
