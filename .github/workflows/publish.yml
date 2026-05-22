@@ -14,8 +14,11 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
-      - run: npm ci
-      - run: npm run build
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 11.2.2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
 
   publish:
     needs: build
@@ -26,10 +29,13 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
-      - run: npm ci
-      - run: npm run build
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 11.2.2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --access public
+          pnpm publish --access public
