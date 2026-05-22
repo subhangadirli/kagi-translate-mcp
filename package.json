@@ -18,14 +18,15 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
     "dotenv": "^16.4.7",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "prom-client": "^14.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
     "@typescript-eslint/typescript-estree": "^8.59.4",
-    "eslint": "^10.4.0",
+    "eslint": "^8.57.1",
     "minimatch": "^10.2.5",
     "typescript": "^5.8.3"
   },

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { warn, error as logError } from "../logging.js";
+import metrics from "../metrics.js";
 import type {
   KagiApiErrorBody,
   KagiProofreadRequest,
@@ -121,6 +122,7 @@ export class KagiClient {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
+        try { metrics.requestCounter.inc(); } catch (e) { void e; }
         const response = await fetch(`${this.baseUrl}${path}`, {
           method: "POST",
           headers: {
