@@ -11,3 +11,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.0] - Initial preparation
 - Initial package files and build configuration
+
+## [0.1.2] - 2026-05-22
+- Bumped package version to `0.1.2` and created release tag `v0.1.2`.
+- Migrate developer workflow to `pnpm`: added `pnpm-lock.yaml` and `packageManager`.
+- Updated CI workflows to use `pnpm` and `pnpm/action-setup` for reproducible installs.
+- Updated `README.md` and added `DEVELOPMENT.md` documenting `pnpm` usage.
