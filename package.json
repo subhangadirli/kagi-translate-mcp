@@ -1,6 +1,6 @@
 {
   "name": "kagi-translate-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for Kagi Translate",
   "license": "LGPL-2.1-only",
   "type": "module",
@@ -26,7 +26,12 @@
     "url": "https://github.com/<owner>/kagi-translate-mcp.git"
   },
   "author": "",
-  "keywords": ["mcp","kagi","translate","mcp-server"],
+  "keywords": [
+    "mcp",
+    "kagi",
+    "translate",
+    "mcp-server"
+  ],
   "files": [
     "dist/",
     "README.md",
