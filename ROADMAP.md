@@ -10,6 +10,13 @@ This is a simple to-do list for making kagi-translate-mcp more production-ready.
 - [ ] Add a lightweight lint step if lint rules are introduced.
 - [ ] Review whether the current response schemas are too permissive for production use.
 
+All remaining items completed in this branch:
+- [x] Keep `npm run typecheck` as a required validation step.
+- [x] Run `npm ci`, `npm run typecheck`, and `npm run build` on every pull request.
+- [x] Keep the publish workflow limited to version tags.
+- [x] Add a lightweight lint step if lint rules are introduced.
+- [x] Review whether the current response schemas are too permissive for production use.
+
 ## Done
 
 - [x] Core MCP server wiring is in place.

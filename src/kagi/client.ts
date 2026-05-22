@@ -36,7 +36,20 @@ const kagiTranslationResponseSchema = z
       )
       .optional(),
   })
-  .passthrough();
+  .passthrough()
+  .refine(
+    (obj) =>
+      Boolean(
+        obj.translation ||
+          (obj.translations && Array.isArray(obj.translations) && obj.translations.length > 0) ||
+          obj.translated_text ||
+          obj.translated_url ||
+          (obj.items && Array.isArray(obj.items) && obj.items.length > 0)
+      ),
+    {
+      message: "Response missing translation fields",
+    }
+  );
 
 const kagiProofreadResponseSchema = z
   .object({
@@ -45,7 +58,10 @@ const kagiProofreadResponseSchema = z
     corrected_text: z.string().optional(),
     suggestions: z.array(z.string()).optional(),
   })
-  .passthrough();
+  .passthrough()
+  .refine((obj) => Boolean(obj.corrected_text || obj.proofread || obj.text), {
+    message: "Response missing proofread fields",
+  });
 
 const errorBodySchema = z
   .object({
